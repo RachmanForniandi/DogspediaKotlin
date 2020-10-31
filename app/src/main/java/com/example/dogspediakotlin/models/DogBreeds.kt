@@ -1,6 +1,6 @@
 package com.example.dogspediakotlin.models
 
-data class DogBreed (
+data class DogBreeds (
     val breedId:String?,
     val dogBreed:String?,
     val lifeSpan:String?,
