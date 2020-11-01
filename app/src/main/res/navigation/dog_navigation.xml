@@ -11,7 +11,7 @@
             android:label="fragment_list"
             tools:layout="@layout/fragment_list" >
         <action
-                android:id="@+id/action_listFragment_to_detailFragment"
+                android:id="@+id/actionDetailFragment"
                 app:destination="@id/detailFragment" />
     </fragment>
     <fragment
@@ -20,11 +20,11 @@
             android:label="fragment_detail"
             tools:layout="@layout/fragment_detail" >
         <action
-                android:id="@+id/action_detailFragment_to_listFragment"
+                android:id="@+id/actionListFragment"
                 app:destination="@id/listFragment" />
-        <!--<argument
+        <argument
                 android:name="dogUuid"
                 android:defaultValue="0"
-                app:argType="Integer"/>-->
+                app:argType="integer"/>
     </fragment>
 </navigation>
