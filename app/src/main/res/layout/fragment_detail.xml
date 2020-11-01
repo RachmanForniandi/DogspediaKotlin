@@ -4,10 +4,62 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".views.fragments.DetailFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+        <ImageView
+                android:id="@+id/imgDetailAnimal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/placeholder"
+                android:layout_alignParentTop="true"
+                android:layout_margin="4dp"
+                android:scaleType="fitCenter"
+                android:minHeight="200dp"
+                android:contentDescription="@string/dog_picture" />
+
+        <TextView
+                android:id="@+id/tvNameOfDog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="Name Dog"
+                android:layout_below="@id/imgDetailAnimal"
+                android:layout_centerHorizontal="true"
+                style="@style/Text"
+                />
+        <TextView
+                android:id="@+id/tvDogPurpose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="Purpose"
+                android:layout_below="@id/tvNameOfDog"
+                android:layout_centerHorizontal="true"
+                style="@style/Text"
+                />
+        <TextView
+                android:id="@+id/tvDogTemperament"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="Dog Temperament"
+                android:layout_below="@id/tvDogPurpose"
+                android:layout_centerHorizontal="true"
+                style="@style/Text"
+                />
+
+        <TextView
+                android:id="@+id/tvDogLifespan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="@string/dog_lifespan"
+                android:layout_below="@id/tvDogTemperament"
+                android:layout_centerHorizontal="true"
+                style="@style/Text"
+                />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 </layout>

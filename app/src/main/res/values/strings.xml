@@ -2,4 +2,9 @@
     <string name="app_name">DogspediaKotlin</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="txt_error_load_data">An error occurred while loading data</string>
+    <string name="dog_picture">dog picture</string>
+    <string name="dog_name">Dog Name</string>
+    <string name="img_dog">imageDog</string>
+    <string name="dog_lifespan">LifeSpan</string>
 </resources>
