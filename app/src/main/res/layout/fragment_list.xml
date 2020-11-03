@@ -5,6 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".views.fragments.ListFragment">
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_list_data"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 

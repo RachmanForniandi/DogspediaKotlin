@@ -35,6 +35,14 @@ class ListFragment : Fragment() {
         list_dogs_data.apply {
             adapter = dogsListAdapter
         }
+        refresh_list_data.setOnRefreshListener {
+            list_dogs_data.visibility = View.GONE
+            txt_error.visibility= View.GONE
+            loading_indicator.visibility= View.VISIBLE
+            viewModel.generateDummyData()
+            refresh_list_data.isRefreshing = false
+
+        }
         observeViewModel()
     }
 
