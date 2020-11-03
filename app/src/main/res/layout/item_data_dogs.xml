@@ -15,7 +15,7 @@
                 android:orientation="horizontal">
 
             <ImageView
-                    android:id="@+id/img_animal"
+                    android:id="@+id/img_dog"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:contentDescription="@string/dog_picture"
