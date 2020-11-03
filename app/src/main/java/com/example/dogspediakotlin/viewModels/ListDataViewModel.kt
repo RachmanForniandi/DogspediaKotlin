@@ -2,20 +2,19 @@ package com.example.dogspediakotlin.viewModels
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.dogspediakotlin.models.DogBreeds
 import com.example.dogspediakotlin.models.DogDatabase
 import com.example.dogspediakotlin.networkUtils.DogsApiService
-import io.reactivex.Scheduler
+import com.example.dogspediakotlin.utils.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
-import java.util.Collections.list
 
 class ListDataViewModel(application: Application):BaseViewModel(application) {
 
+    private var prefHelper = SharedPreferencesHelper(getApplication())
     private val dogsApiService = DogsApiService()
     private val disposable = CompositeDisposable()
 
@@ -78,6 +77,7 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
             }
             dogsRetrieved(list)
         }
+        prefHelper.saveUpdateTime(System.nanoTime())
     }
 
 
