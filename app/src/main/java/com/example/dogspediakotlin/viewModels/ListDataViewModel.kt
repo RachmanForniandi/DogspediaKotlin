@@ -1,6 +1,7 @@
 package com.example.dogspediakotlin.viewModels
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.example.dogspediakotlin.models.DogBreeds
 import com.example.dogspediakotlin.models.DogDatabase
@@ -10,11 +11,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
+
 
 class ListDataViewModel(application: Application):BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
+    private var refreshTime = 10 * 1000 + 1000 * 100L
     private val dogsApiService = DogsApiService()
     private val disposable = CompositeDisposable()
 
@@ -32,7 +36,26 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
         dogs.value = dogList
         dogsLoadError.value = false
         loading.value = false*/
+        val updateTime = prefHelper.getUpdateTime()
+        if (updateTime != null && updateTime != 0L && System.nanoTime()- updateTime < refreshTime){
+            fetchFromLocalDatabase()
+        }else{
+            fetchRemoteData()
+        }
+    }
+
+    fun refreshByPassCache(){
         fetchRemoteData()
+    }
+
+    private fun fetchFromLocalDatabase() {
+        loading.value = true
+        launch {
+            val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
+            dogsRetrieved(dogs)
+            Toast.makeText(getApplication(),"Dogs retrieved from database",Toast.LENGTH_SHORT).show()
+
+        }
     }
 
     private fun fetchRemoteData() {
@@ -47,6 +70,7 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
                         dogsLoadError.value = false
                         loading.value = false*/
                         saveDogsDataLocally(dogList)
+                        Toast.makeText(getApplication(),"Dogs retrieved from end point service",Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onError(e: Throwable) {
@@ -79,7 +103,6 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
         }
         prefHelper.saveUpdateTime(System.nanoTime())
     }
-
 
 
     override fun onCleared() {

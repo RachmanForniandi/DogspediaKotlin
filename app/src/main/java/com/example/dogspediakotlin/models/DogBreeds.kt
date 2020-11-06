@@ -23,11 +23,10 @@ data class DogBreeds (
     @SerializedName("breed_group")
     val breedGroup:String?,
 
-    @ColumnInfo(name="breed_for")
-    @SerializedName("breed_for")
-    val breedFor:String?,
+    @ColumnInfo(name="bred_for")
+    @SerializedName("bred_for")
+    val bredFor:String?,
 
-    @ColumnInfo(name="temperament")
     @SerializedName("temperament")
     val temperament:String?,
 

@@ -8,13 +8,13 @@ import androidx.room.Query
 interface DogDao {
 
     @Insert
-    suspend fun insertAll(vararg dogs:DogBreeds):List<Long>
+    suspend fun insertAll(vararg dogs:DogBreeds): List<Long>
 
     @Query("SELECT * FROM dogbreeds")
-    suspend fun getAllDogs():List<DogBreeds>
+    suspend fun getAllDogs(): List<DogBreeds>
 
-    @Query("SELECT * FROM dogbreeds WHERE uuid =:dogId")
-    suspend fun getDog(dogId: Int)
+    @Query("SELECT * FROM dogbreeds WHERE uuid = :dogId")
+    suspend fun getDog(dogId: Int): DogBreeds
 
     @Query("DELETE FROM dogbreeds")
     suspend fun deleteAllDogs()
