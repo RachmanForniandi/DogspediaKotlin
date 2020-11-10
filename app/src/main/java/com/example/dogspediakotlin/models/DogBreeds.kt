@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity
 data class DogBreeds (
+    
     @ColumnInfo(name="breed_id")
     @SerializedName("id")
     val breedId:String?,

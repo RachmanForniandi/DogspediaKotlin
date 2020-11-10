@@ -29,10 +29,11 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         arguments?.let {
             dogUuid = DetailFragmentArgs.fromBundle(it).dogUuid
         }
-
+        
         viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
         viewModel.fetch(dogUuid)
 

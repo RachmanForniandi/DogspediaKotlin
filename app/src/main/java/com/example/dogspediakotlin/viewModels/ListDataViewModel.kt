@@ -11,14 +11,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
 
 
 class ListDataViewModel(application: Application):BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
-    private var refreshTime = 10 * 1000 + 1000 * 100L
+    private var refreshTime = 5 * 60 * 1000 * 1000 * 100L
     private val dogsApiService = DogsApiService()
     private val disposable = CompositeDisposable()
 
@@ -27,20 +27,23 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
     val loading = MutableLiveData<Boolean>()
 
     fun generateDummyData(){
-        /*val dog1 = DogBreeds("1","Corgi","15 years","breadGroup","breedFor","temperament","")
-        val dog2 = DogBreeds("2","Labrador","10 years","breadGroup","breedFor","temperament","")
-        val dog3 = DogBreeds("3","RotWailer","20 years","breadGroup","breedFor","temperament","")
-
-        val dogList = arrayListOf<DogBreeds>(dog1,dog2,dog3)
-
-        dogs.value = dogList
-        dogsLoadError.value = false
-        loading.value = false*/
+        checkCacheDuration()
         val updateTime = prefHelper.getUpdateTime()
-        if (updateTime != null && updateTime != 0L && System.nanoTime()- updateTime < refreshTime){
+        if (updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
             fetchFromLocalDatabase()
         }else{
             fetchRemoteData()
+        }
+    }
+
+    private fun checkCacheDuration() {
+        val cachePreference = prefHelper.getCacheDuration()
+
+        try {
+            val cachePreferenceInt = cachePreference?.toInt() ?: 5 *60
+            refreshTime = cachePreferenceInt.times(1000 *1000 *1000L)
+        }catch (e:NumberFormatException){
+            e.printStackTrace()
         }
     }
 
@@ -54,7 +57,6 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
             val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
             dogsRetrieved(dogs)
             Toast.makeText(getApplication(),"Dogs retrieved from database",Toast.LENGTH_SHORT).show()
-
         }
     }
 
