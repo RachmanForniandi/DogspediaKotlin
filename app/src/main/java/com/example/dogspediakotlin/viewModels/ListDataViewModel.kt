@@ -1,17 +1,24 @@
 package com.example.dogspediakotlin.viewModels
 
+import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.example.dogspediakotlin.models.DogBreeds
+import com.example.dogspediakotlin.models.DogDatabase
 import com.example.dogspediakotlin.networkUtils.DogsApiService
-import io.reactivex.Scheduler
+import com.example.dogspediakotlin.utils.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
+import java.lang.NumberFormatException
 
-class ListDataViewModel:ViewModel() {
 
+class ListDataViewModel(application: Application):BaseViewModel(application) {
+
+    private var prefHelper = SharedPreferencesHelper(getApplication())
+    private var refreshTime = 5 * 60 * 1000 * 1000 * 100L
     private val dogsApiService = DogsApiService()
     private val disposable = CompositeDisposable()
 
@@ -20,16 +27,37 @@ class ListDataViewModel:ViewModel() {
     val loading = MutableLiveData<Boolean>()
 
     fun generateDummyData(){
-        /*val dog1 = DogBreeds("1","Corgi","15 years","breadGroup","breedFor","temperament","")
-        val dog2 = DogBreeds("2","Labrador","10 years","breadGroup","breedFor","temperament","")
-        val dog3 = DogBreeds("3","RotWailer","20 years","breadGroup","breedFor","temperament","")
+        checkCacheDuration()
+        val updateTime = prefHelper.getUpdateTime()
+        if (updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime){
+            fetchFromLocalDatabase()
+        }else{
+            fetchRemoteData()
+        }
+    }
 
-        val dogList = arrayListOf<DogBreeds>(dog1,dog2,dog3)
+    private fun checkCacheDuration() {
+        val cachePreference = prefHelper.getCacheDuration()
 
-        dogs.value = dogList
-        dogsLoadError.value = false
-        loading.value = false*/
+        try {
+            val cachePreferenceInt = cachePreference?.toInt() ?: 5 *60
+            refreshTime = cachePreferenceInt.times(1000 *1000 *1000L)
+        }catch (e:NumberFormatException){
+            e.printStackTrace()
+        }
+    }
+
+    fun refreshByPassCache(){
         fetchRemoteData()
+    }
+
+    private fun fetchFromLocalDatabase() {
+        loading.value = true
+        launch {
+            val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
+            dogsRetrieved(dogs)
+            Toast.makeText(getApplication(),"Dogs retrieved from database",Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun fetchRemoteData() {
@@ -40,9 +68,11 @@ class ListDataViewModel:ViewModel() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object : DisposableSingleObserver<List<DogBreeds>>() {
                     override fun onSuccess(dogList: List<DogBreeds>) {
-                        dogs.value = dogList
+                        /*dogs.value = dogList
                         dogsLoadError.value = false
-                        loading.value = false
+                        loading.value = false*/
+                        saveDogsDataLocally(dogList)
+                        Toast.makeText(getApplication(),"Dogs retrieved from end point service",Toast.LENGTH_SHORT).show()
                     }
 
                     override fun onError(e: Throwable) {
@@ -54,6 +84,28 @@ class ListDataViewModel:ViewModel() {
                 })
         )
     }
+
+    private fun dogsRetrieved(dogList:List<DogBreeds>){
+        dogs.value = dogList
+        dogsLoadError.value = false
+        loading.value = false
+    }
+
+    private fun saveDogsDataLocally(list: List<DogBreeds>) {
+        launch {
+            val dao = DogDatabase(getApplication()).dogDao()
+            dao.deleteAllDogs()
+            val result = dao.insertAll(*list.toTypedArray())
+            var i =0
+            while (i < list.size){
+                list[i].uuid = result[i].toInt()
+                ++i
+            }
+            dogsRetrieved(list)
+        }
+        prefHelper.saveUpdateTime(System.nanoTime())
+    }
+
 
     override fun onCleared() {
         super.onCleared()
