@@ -33,7 +33,7 @@ class DetailFragment : Fragment() {
         arguments?.let {
             dogUuid = DetailFragmentArgs.fromBundle(it).dogUuid
         }
-        
+
         viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
         viewModel.fetch(dogUuid)
 
