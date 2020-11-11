@@ -8,11 +8,15 @@
         <variable
                 name="dogs"
                 type="com.example.dogspediakotlin.models.DogBreeds" />
+        <variable
+                name="palette"
+                type="com.example.dogspediakotlin.models.DogPalette" />
     </data>
 
     <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@{palette.color}">
         <ImageView
                 android:id="@+id/imgDetailAnimal"
                 android:layout_width="match_parent"
