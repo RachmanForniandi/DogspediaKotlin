@@ -19,6 +19,7 @@ import com.example.dogspediakotlin.models.DogPalette
 import com.example.dogspediakotlin.utils.getProgressDrawable
 import com.example.dogspediakotlin.utils.loadImage
 import com.example.dogspediakotlin.viewModels.DetailViewModel
+import com.example.dogspediakotlin.views.MainActivity
 import kotlinx.android.synthetic.main.fragment_detail.*
 import kotlinx.android.synthetic.main.item_data_dogs.*
 
@@ -27,6 +28,7 @@ class DetailFragment : Fragment() {
     private lateinit var viewModel:DetailViewModel
     private var dogUuid = 0
     private lateinit var dataBinding: FragmentDetailBinding
+    private var sendSMsStarted = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -97,7 +99,10 @@ class DetailFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.action_send_sms ->{
-                view?.let {}
+                view?.let {
+                    sendSMsStarted = true
+                    (activity as MainActivity).checkSmsPermission()
+                }
             }
 
             R.id.action_share ->{
@@ -105,6 +110,11 @@ class DetailFragment : Fragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun onPermissionResult(permissionGranted: Boolean){
+
+
     }
 
 }
