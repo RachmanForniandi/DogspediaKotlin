@@ -10,6 +10,7 @@ import com.example.dogspediakotlin.R
 
 
 class SettingsFragment : PreferenceFragmentCompat() {
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences,rootKey)
     }
