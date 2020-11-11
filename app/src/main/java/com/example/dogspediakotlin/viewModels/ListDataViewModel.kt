@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.dogspediakotlin.models.DogBreeds
 import com.example.dogspediakotlin.models.DogDatabase
 import com.example.dogspediakotlin.networkUtils.DogsApiService
+import com.example.dogspediakotlin.utils.NotificationHelper
 import com.example.dogspediakotlin.utils.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -73,6 +74,7 @@ class ListDataViewModel(application: Application):BaseViewModel(application) {
                         loading.value = false*/
                         saveDogsDataLocally(dogList)
                         Toast.makeText(getApplication(),"Dogs retrieved from end point service",Toast.LENGTH_SHORT).show()
+                        NotificationHelper(getApplication()).createNotification()
                     }
 
                     override fun onError(e: Throwable) {
