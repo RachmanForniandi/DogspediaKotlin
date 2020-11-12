@@ -39,3 +39,8 @@ data class DogBreeds (
     var uuid: Int =0
 }
 data class DogPalette(var color:Int)
+data class SmsInfo(
+    var to:String,
+    var text:String,
+    var imageUrl:String?
+)

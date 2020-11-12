@@ -1,8 +1,13 @@
 package com.example.dogspediakotlin.views.fragments
 
+import android.app.AlertDialog
+import android.app.PendingIntent
+import android.content.Intent
+import android.content.Intent.createChooser
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.telephony.SmsManager
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -15,7 +20,10 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.example.dogspediakotlin.R
 import com.example.dogspediakotlin.databinding.FragmentDetailBinding
+import com.example.dogspediakotlin.databinding.SendSmsDialogBinding
+import com.example.dogspediakotlin.models.DogBreeds
 import com.example.dogspediakotlin.models.DogPalette
+import com.example.dogspediakotlin.models.SmsInfo
 import com.example.dogspediakotlin.utils.getProgressDrawable
 import com.example.dogspediakotlin.utils.loadImage
 import com.example.dogspediakotlin.viewModels.DetailViewModel
@@ -29,6 +37,7 @@ class DetailFragment : Fragment() {
     private var dogUuid = 0
     private lateinit var dataBinding: FragmentDetailBinding
     private var sendSMsStarted = false
+    private var  currentDog: DogBreeds? =null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +65,7 @@ class DetailFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.dogLiveData.observe(viewLifecycleOwner, Observer {dog ->
+            currentDog = dog
             dog?.let {
                /* tvNameOfDog.text = dog.dogBreed
                 tvDogPurpose.text = dog.bredFor
@@ -106,15 +116,48 @@ class DetailFragment : Fragment() {
             }
 
             R.id.action_share ->{
-                view?.let {}
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.putExtra(Intent.EXTRA_SUBJECT,"Check out this dog breed")
+                intent.putExtra(Intent.EXTRA_TEXT,"${currentDog?.dogBreed} breed for ${currentDog?.bredFor}")
+                intent.putExtra(Intent.EXTRA_STREAM,currentDog?.imageUrl)
+                startActivity(Intent.createChooser(intent, "Share with"))
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
     fun onPermissionResult(permissionGranted: Boolean){
+        if (sendSMsStarted && permissionGranted){
+            context?.let {
+                val smsInfo = SmsInfo("","${currentDog?.dogBreed} breed for ${currentDog?.bredFor}"
+                    ,currentDog?.imageUrl)
 
+                val dialogBinding = DataBindingUtil.inflate<SendSmsDialogBinding>(LayoutInflater.from(it),
+                    R.layout.send_sms_dialog,null,false)
 
+                AlertDialog.Builder(it)
+                    .setView(dialogBinding.root)
+                    .setPositiveButton("Send SMS"){dialog,which ->
+                        if (!dialogBinding.smsDestination.text.isNullOrEmpty()){
+                            smsInfo.to = dialogBinding.smsDestination.text.toString()
+                            sendSms(smsInfo)
+                        }
+                    }
+                    .setNegativeButton("Cancel"){dialog,which -> }
+                    .show()
+
+                dialogBinding.smsInfo = smsInfo
+
+                }
+            }
+        }
+
+    private fun sendSms(smsInfo: SmsInfo) {
+        val intent = Intent(context,MainActivity::class.java)
+        val pi = PendingIntent.getActivity(context,0,intent,0)
+        val sms = SmsManager.getDefault()
+        sms.sendTextMessage(smsInfo.to,null,smsInfo.text,pi, null)
     }
 
 }
